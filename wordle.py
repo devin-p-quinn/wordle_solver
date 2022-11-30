@@ -20,7 +20,16 @@ def main():
     answerKey = {}
 
     for wLetter in theWord:
-        if wLetter.equals()
+        for gLetter in guess:
+            if wLetter == gLetter:
+                answerKey[gLetter] = "g"
+            elif gLetter in theWord:
+                answerKey[gLetter] = "y"
+            else:
+                answerKey[gLetter] = "b"
+
+    print(answerKey)
+    print(theWord)
 
 
 if __name__ == "__main__":
