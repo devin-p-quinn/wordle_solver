@@ -1,23 +1,32 @@
 '''
     CS5100
-    Wordle
+    Final Project
     Fall 2022
     Devin Quinn
+    Annie Pates
 '''
 import random
 
-def main():
-    '''describe func here'''
+def play(guess):
+    '''Function takes a guess word as the parameter and returns a dictionary
+    The dictionary is a key to the wordle answer
+    Each letter in the guess is shown next to a letter representing the key
+    For Example:
+        word: slate
+        guess: slant
+        {'s':'g','l':'g','a':'g','n':'b','t':'y'}
+        'g' = green, letter in correct position
+        'y' = yellow, letter in word not in correct position
+        'b' = black, letter not in word'''
+
     word_file = open("wordle_words.txt", "r")
     words = []
     for word in word_file:
         words.append(word_file.readline())
 
-#    theWord = random.choice(words)
-    theWord = "slate"
-
-    guess = input("Enter guess: ")
-
+    word_file.close()
+    theWord = random.choice(words)
+    theWord = theWord.strip()
     guess = ''.join(guess)
 
     answerKey = {}
@@ -35,8 +44,13 @@ def main():
             answerKey[guess[i]] = "b"
             i = i + 1
 
-    print(answerKey)
-    print(theWord)
+    return answerKey
+
+
+def main():
+    '''Main file for executing wordle program'''
+    answer = play("slant")
+    print(answer)
 
 
 if __name__ == "__main__":
