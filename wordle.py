@@ -7,18 +7,7 @@
 '''
 import random
 
-def play(guess):
-    '''Function takes a guess word as the parameter and returns a dictionary
-    The dictionary is a key to the wordle answer
-    Each letter in the guess is shown next to a letter representing the key
-    For Example:
-        word: slate
-        guess: slant
-        {'s':'g','l':'g','a':'g','n':'b','t':'y'}
-        'g' = green, letter in correct position
-        'y' = yellow, letter in word not in correct position
-        'b' = black, letter not in word'''
-
+def getWord():
     word_file = open("wordle_words.txt", "r")
     words = []
     for word in word_file:
@@ -27,21 +16,36 @@ def play(guess):
     word_file.close()
     theWord = random.choice(words)
     theWord = theWord.strip()
+    return theWord
+
+
+def play(theWord, guess):
+    '''Function takes a guess word as the parameter and returns a list
+    The list is a key to the wordle answer
+    Each letter in the guess is shown next to a letter representing the key
+    For Example:
+        word: slate
+        guess: slant
+        ['g','g','g','b','y']
+        'g' = green, letter in correct position
+        'y' = yellow, letter in word not in correct position
+        'b' = black, letter not in word'''
+
     guess = ''.join(guess)
 
-    answerKey = {}
+    answerKey = []
 
     i = 0
 
     for wLetter in theWord:
         if wLetter == guess[i]:
-            answerKey[guess[i]] = "g"
+            answerKey.append("g")
             i = i + 1
         elif guess[i] in theWord:
-            answerKey[guess[i]] = "y"
+            answerKey.append("y")
             i = i + 1
         else:
-            answerKey[guess[i]] = "b"
+            answerKey.append("b")
             i = i + 1
 
     return answerKey
@@ -49,8 +53,15 @@ def play(guess):
 
 def main():
     '''Main file for executing wordle program'''
-    answer = play("slant")
-    print(answer)
+    word = getWord()
+    i = 0
+    while i < 6:
+        guess = input("Enter guess: ")
+        answer = play(word, guess)
+        print(answer)
+        i = i + 1
+#    answer = play("slant", "slate")
+#    print(answer)
 
 
 if __name__ == "__main__":
