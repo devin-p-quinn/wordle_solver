@@ -69,6 +69,8 @@ def main():
             print("Correct Word! You Win!: " + word)
             break
         i = i + 1
+    if not checkWon(answer):
+        print("you lose! Correct word: " + word)
 
 
 if __name__ == "__main__":
