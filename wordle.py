@@ -13,20 +13,27 @@ def main():
     for word in word_file:
         words.append(word_file.readline())
 
-    theWord = random.choice(words)
+#    theWord = random.choice(words)
+    theWord = "slate"
 
     guess = input("Enter guess: ")
 
+    guess = ''.join(guess)
+
     answerKey = {}
 
+    i = 0
+
     for wLetter in theWord:
-        for gLetter in guess:
-            if wLetter == gLetter:
-                answerKey[gLetter] = "g"
-            elif gLetter in theWord:
-                answerKey[gLetter] = "y"
-            else:
-                answerKey[gLetter] = "b"
+        if wLetter == guess[i]:
+            answerKey[guess[i]] = "g"
+            i = i + 1
+        elif guess[i] in theWord:
+            answerKey[guess[i]] = "y"
+            i = i + 1
+        else:
+            answerKey[guess[i]] = "b"
+            i = i + 1
 
     print(answerKey)
     print(theWord)
