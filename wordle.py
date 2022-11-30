@@ -18,6 +18,11 @@ def getWord():
     theWord = theWord.strip()
     return theWord
 
+def checkWon(answer):
+    for letter in answer:
+        if letter != 'g':
+            return False
+    return True
 
 def play(theWord, guess):
     '''Function takes a guess word as the parameter and returns a list
@@ -54,14 +59,16 @@ def play(theWord, guess):
 def main():
     '''Main file for executing wordle program'''
     word = getWord()
+#    word = "slate"
     i = 0
     while i < 6:
         guess = input("Enter guess: ")
         answer = play(word, guess)
         print(answer)
+        if checkWon(answer):
+            print("Correct Word! You Win!: " + word)
+            break
         i = i + 1
-#    answer = play("slant", "slate")
-#    print(answer)
 
 
 if __name__ == "__main__":
