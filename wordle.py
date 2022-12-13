@@ -49,7 +49,7 @@ def play(theWord, guess):
         elif guess[i] in theWord:
             answerKey.append("y")
             i = i + 1
-        else:
+        elif guess[i] not in theWord:
             answerKey.append("b")
             i = i + 1
 
@@ -75,4 +75,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
