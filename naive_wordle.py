@@ -8,14 +8,9 @@
 import random
 
 def getWord():
-    word_file = open("wordle_words.txt", "r")
-    words = []
-    for word in word_file:
-        words.append(word_file.readline())
-
-    word_file.close()
+    words = getWordList()
     theWord = random.choice(words)
-    theWord = theWord.strip()
+
     return theWord
 
 def getWordList():
@@ -58,51 +53,51 @@ def play(theWord, guess):
         elif guess[i] in theWord:
             answerKey.append("y")
             i = i + 1
-        else:
+        elif guess[i] not in theWord:
             answerKey.append("b")
             i = i + 1
 
     return answerKey
 
 def testNaive():
-    guess = "slate"
-    word = getWord()
+    bestGuess = ["slate", "crane", "slant", "trace", "crate", "carte"]
+    guess = random.choice(bestGuess)
+    wordle = getWord()
     i = 0
     words = getWordList()
     good_words = []
     good_letters = []
-    green_letters = {}
+    green_letters = {0:"", 1:"", 2:"", 3:"", 4:""}
     yellow_letters = []
     black_letters =[]
     alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
                'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
     while i < 6:
-        answerKey = play(word, guess)
+        answerKey = play(wordle, guess)
+        print("Wordle: " + wordle + "\n")
+        print("Current guess: " + guess + "\n")
+
 
         if (checkWon(answerKey)):
             print("You won in " + str(i) + " attempts\n")
-            print(word + " = " + guess)
+            print(wordle + " = " + guess)
             return i
 
         j = 0
         for letter in answerKey:
             if letter == 'g':
-                green_letters[j] = word[j]
-            elif letter == 'b':
-                black_letters.append(word[j])
-            elif letter == 'y':
-                yellow_letters.append(word[j])
+                green_letters[j] = guess[j]
+            elif letter == 'b' and guess[j] not in black_letters:
+                black_letters.append(guess[j])
+            elif letter == 'y' and guess[j] not in yellow_letters:
+                yellow_letters.append(guess[j])
             j += 1
 
-#        print("Green letters: " + green_letters + "\n")
-#        print("Black letters: " + black_letters + "\n")
-#        print("Yellow letters: " + yellow_letters + "\n")
 
         for letter in alphabet:
             if letter in black_letters:
                alphabet.remove(letter)
-#        print("Alphabet length: " + str(len(alphabet)) + "\n")
 
         for word in reversed(words):
             for letter in word:
@@ -110,18 +105,21 @@ def testNaive():
                     words.remove(word)
                     break
 
-        for word in list(words):
-            for key in green_letters:
-                if word[key] == green_letters[key]:
-                    guess = word
+        if guess in words:
+            words.remove(guess)
 
+        if len(words) > 0:
+            guess = random.choice(words)
 
-#        print("Word list length: " + str(len(words)) + "\n")
+        for word in words:
+#            for key in green_letters:
+            if word[0] == green_letters[0] or word[1] == green_letters[1] or word[2] == green_letters[2] or word[3] == green_letters[3] or word[4] == green_letters[4]:
+                guess = word
         i += 1
 
 
     print("No win\n")
-    print("Wordle was: " + word + "\n")
+    print("Wordle was: " + wordle + "\n")
 
     return -1
 
@@ -145,7 +143,7 @@ def main():
     wins = 0
     attempts = 0
     losses = 0
-    while i < 10000:
+    while i < 1000:
         sol = testNaive()
         if sol > 0:
             wins += 1
@@ -157,8 +155,8 @@ def main():
 
     print("Total wins: " + str(wins) + "\n")
     print("Total losses: " + str(losses) + "\n")
-    print("Average attempts: " + str(attempts / 10000) + "\n")
-    print("Win rate: " + str(wins / 10000) + "\n")
+    print("Average attempts: " + str(attempts / 1000) + "\n")
+    print("Win rate: " + str(wins / 1000) + "\n")
 
 
 if __name__ == "__main__":
