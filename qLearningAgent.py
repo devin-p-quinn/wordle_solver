@@ -8,6 +8,7 @@
 import random
 from collections import defaultdict
 
+import rl_wordle
 import util
 import wordle, naive_wordle
 
@@ -19,7 +20,7 @@ class QLearningAgent():
     and actions are the next word guessed
     """
 
-    def __init__(self, alpha=1.0, epsilon=0.5, gamma=0.8, numTraining = 10):
+    def __init__(self, alpha=1.0, epsilon=0.2, gamma=0.8, numTraining = 10):
         """
         Sets options, which can be passed in via the Pacman command line using -a alpha=0.5,...
         alpha    - learning rate
@@ -43,6 +44,9 @@ class QLearningAgent():
 
         # Initiate q-values
         self.qvalues = util.Counter()
+
+    def getQValues(self):
+        return self.qvalues
 
     def filterWords(self, state):
         j = 0
@@ -76,8 +80,12 @@ class QLearningAgent():
         return self.qvalues[(state, action)]
 
     def getReward(self, state):
+        original_list_length = len(self.actions)
+        # This will change the list of remaining words. Only call once state is determined
+        self.filterWords(state)
+        new_list_length = len(self.actions)
         reward = 0
-        if wordle.checkWon(state):
+        if wordle.checkWon():
             reward += 1000
         else:
             for letter in state:
@@ -85,6 +93,11 @@ class QLearningAgent():
                     reward += 2
                 if letter == "y":
                     reward += 1
+
+            # Bonus for reducing the pool of potential next words
+            if new_list_length != 0:
+                reward += original_list_length / new_list_length
+
         return reward
 
     def computeValueFromQValues(self, state):
@@ -100,15 +113,19 @@ class QLearningAgent():
         best_action = None
         qval = -self.MAXINT
 
-        for action in self.actions:
+        """for action in self.actions:
             temp = self.getQValue(state, action)
             if temp > qval:
                 qval = temp
-                best_action = action
+                best_action = [action]
             if temp == qval:
                 best_action == random.choice([best_action, action])
+        return best_action"""
 
-        return best_action
+        value = self.computeValueFromQValues(state)
+        actions = [action for action in self.actions
+                   if self.getQValue(state, action) == value]
+        return random.choice(actions)
 
     def getAction(self, state):
         """
@@ -131,6 +148,7 @@ class QLearningAgent():
         current_qval = self.getQValue(state, action)
         difference = reward + self.discount * self.computeValueFromQValues(nextState) - current_qval
         self.qvalues[state, action] = current_qval + self.alpha * difference
+        #print(self.qvalues)
 
     def reset(self):
         """

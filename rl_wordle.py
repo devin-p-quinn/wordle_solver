@@ -10,7 +10,6 @@ import qLearningAgent, wordle, naive_wordle
 
 agent = qLearningAgent.QLearningAgent() # Initiate agent
 
-
 def play(theWord, guess):
     '''
     Just like play function from wordle.py but makes key a string for easier hashing
@@ -25,7 +24,7 @@ def play(theWord, guess):
         'y' = yellow, letter in word not in correct position
         'b' = black, letter not in word'''
 
-    guess = ''.join(guess)
+    #guess = ''.join(guess)
 
     answerKey = ""
 
@@ -44,52 +43,58 @@ def play(theWord, guess):
 
     return answerKey
 
-def runEpisode():
+def runEpisode(numEpisode):
     "Set the wordle word"
     theWord = naive_wordle.getWord()
     initial_state = (None, "bbbbb")
-    # print(agent.qvalues)
 
     guess = agent.getAction(initial_state)  # Get first action based on initial state of all black
 
     i = 0
     while i < 6:
         state = (guess, play(theWord, guess))
-        print("Wordle: " + theWord + "\n")
-        print("Current guess: " + guess + "\n")
+        if numEpisode % 1000 == 0:
+            print("Episode: ", numEpisode)
+            print("Wordle: " + theWord)
+            print("Current guess: " + guess + "\n")
 
         reward = agent.getReward(state)  # Calculate reward from guess
 
         # Win behavior
         if (wordle.checkWon(state[1])):
-            print("You won in " + str(i) + " attempts\n")
-            print(theWord + " = " + guess)
+            if numEpisode % 1000 == 0:
+                print("You won in " + str(i) + " attempts\n")
+                print(theWord + " = " + guess)
+            agent.reset()
             return i
 
         # Update qvalues
         next_guess = agent.getAction(state)
         next_state = (next_guess, play(theWord, next_guess))
-        agent.update(state, guess, next_state, reward)
+        agent.update(state, next_guess, next_state, reward)
 
         guess = next_guess
         i += 1
 
-    print("No win\n")
-    print("Wordle was: " + theWord + "\n")
+    if numEpisode % 1000 ==0:
+        print("No win\n")
+        print("Wordle was: " + theWord + "\n")
 
     agent.reset()  # Reset word list etc in agent for new round
     return -1
 
 
 def main():
-    episodes = 10
+    episodes = 1
+    numEpisode = 0
+
     '''Main file for executing wordle program'''
     i = 0
     wins = 0
     attempts = 0
     losses = 0
     while i < episodes:
-        sol = runEpisode()
+        sol = runEpisode(numEpisode)
         if sol > 0:
             wins += 1
             attempts += sol
@@ -97,6 +102,9 @@ def main():
             losses += 1
             attempts += 6
         i +=1
+        numEpisode += 1
+
+    print(agent.qvalues)
 
     print("Total wins: " + str(wins) + "\n")
     print("Total losses: " + str(losses) + "\n")
