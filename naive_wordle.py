@@ -63,7 +63,7 @@ def testNaive():
     bestGuess = ["slate", "crane", "slant", "trace", "crate", "carte"]
     guess = random.choice(bestGuess)
     wordle = getWord()
-    i = 0
+    i = 1
     words = getWordList()
     good_words = []
     good_letters = []
@@ -73,7 +73,7 @@ def testNaive():
     alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m',
                'n','o','p','q','r','s','t','u','v','w','x','y','z']
 
-    while i < 6:
+    while i <= 6:
         answerKey = play(wordle, guess)
         print("Wordle: " + wordle + "\n")
         print("Current guess: " + guess + "\n")

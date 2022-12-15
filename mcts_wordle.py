@@ -76,7 +76,7 @@ def testMCTS():
     yellowWords = []
     wYellow = {}
 
-    for i in range(6):
+    for i in range(1,7):
         wGreen = {}
         gGreen = []
         gYellow = []
@@ -84,7 +84,7 @@ def testMCTS():
         answerKey = play(wordle, guess)
         print("Wordle: " + wordle + "\n")
         print("Current guess: " + guess + "\n")
-        print(answerKey)
+        #print(answerKey)
 
 
         if (checkWon(answerKey)):
@@ -100,22 +100,22 @@ def testMCTS():
             elif answerKey[i] == 'b':
                 if guess[i] in alphabet:
                     alphabet.remove(guess[i])
-        print(green_letters)
+        #print(green_letters)
 
         for word in reversed(words):
             for letter in word:
                 if letter not in alphabet:
                     words.remove(word)
                     break
-        print(f"Words length: {len(words)}")
+        #print(f"Words length: {len(words)}")
 
         for word in words:
             for key, value in list(green_letters.items()):
                 if word[key] != value:
                     words.remove(word)
                     break
-        print(f"words length: {len(words)}")
-        print(words)
+        #print(f"words length: {len(words)}")
+        #print(words)
 
         for word in words:
             weight = 0
@@ -139,7 +139,7 @@ def testMCTS():
 #        if len(words) > 0:
 #            guess = random.choice(words)
 
-        print(wYellow)
+        #print(wYellow)
         for word, weight in wGreen.items():
             if weight == list(wGreen.values())[0]:
                 gGreen.append(word)
@@ -148,21 +148,21 @@ def testMCTS():
             if weight == list(wYellow.values())[0]:
                 gYellow.append(word)
 
-        print(wGreen)
+        """print(wGreen)
         print("Grenn lenght:")
-        print(len(wGreen))
+        print(len(wGreen))"""
 
         seed = random.randrange(1, 10)
 
-        if seed < 2:
+        if seed < 1:
             if len(gYellow) > 0:
                 guess = random.choice(gYellow)
         else:
             if len(gGreen) > 0:
                 guess = random.choice(gGreen)
 
-        print(gGreen)
-        print(gYellow)
+        #print(gGreen)
+        #print(gYellow)
     return -1
 
 
