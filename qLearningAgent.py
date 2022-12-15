@@ -19,7 +19,7 @@ class QLearningAgent():
     and actions are the next word guessed
     """
 
-    def __init__(self, alpha=1.0, epsilon=0.9, gamma=0.8, numTraining = 10):
+    def __init__(self, alpha=1.0, epsilon=0.2, gamma=0.8, numTraining = 10):
         """
         Sets options, which can be passed in via the Pacman command line using -a alpha=0.5,...
         alpha    - learning rate
@@ -109,9 +109,9 @@ class QLearningAgent():
         else:
             for letter in state[1]:
                 if letter == "g":
-                    reward += 200
+                    reward += 2
                 if letter == "y":
-                    reward += 100
+                    reward += 1
 
             # Bonus for reducing the pool of potential next words
             if new_list_length != 0:

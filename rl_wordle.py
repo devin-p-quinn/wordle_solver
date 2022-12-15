@@ -24,8 +24,6 @@ def play(theWord, guess):
         'y' = yellow, letter in word not in correct position
         'b' = black, letter not in word'''
 
-    #guess = ''.join(guess)
-
     answerKey = ""
 
     i = 0
@@ -50,12 +48,12 @@ def runEpisode(numEpisode):
     # Set the wordle word
     theWord = naive_wordle.getWord()
     initial_state = (None, "bbbbb")
-    print_interval = 100
+    print_interval = 1000
 
     guess = agent.getAction(initial_state)  # Get first action based on initial state of all black
 
-    i = 0
-    while i < 6:
+    i = 1
+    while i <= 6:
         state = (guess, play(theWord, guess))  # Make a guess
         if numEpisode % print_interval == 0:
             print("Episode: ", numEpisode)
@@ -93,7 +91,7 @@ def main():
     """
     Run specified number of overall training episodes and track win % and average guesses needed
     """
-    episodes = 1000
+    episodes = 10000
     numEpisode = 0
 
     i = 0
@@ -122,8 +120,11 @@ def main():
     Run specified number of testing episodes based on trained QAgent. 
     Print overall win % and average number of guesses needed
     """
-    testing_episodes = 1
+    testing_episodes = 1000
     num_testing_episode = 0
+
+    agent.setAlpha(0)
+    agent.setEpsilon(0)
 
     k = 0
     wins = 0
