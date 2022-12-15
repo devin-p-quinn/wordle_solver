@@ -44,27 +44,31 @@ def play(theWord, guess):
     return answerKey
 
 def runEpisode(numEpisode):
-    "Set the wordle word"
+    """
+    Runs an episode of the game (6 guesses)
+    """
+    # Set the wordle word
     theWord = naive_wordle.getWord()
     initial_state = (None, "bbbbb")
+    print_interval = 100
 
     guess = agent.getAction(initial_state)  # Get first action based on initial state of all black
 
     i = 0
     while i < 6:
-        state = (guess, play(theWord, guess))
-        if numEpisode % 1000 == 0:
+        state = (guess, play(theWord, guess))  # Make a guess
+        if numEpisode % print_interval == 0:
             print("Episode: ", numEpisode)
             print("Wordle: " + theWord)
             print("Current guess: " + guess + "\n")
 
-        reward = agent.getReward(state)  # Calculate reward from guess
+        reward = agent.getReward(state)  # Calculate reward from guess, also filters dictionary
 
         # Win behavior
         if (wordle.checkWon(state[1])):
-            if numEpisode % 1000 == 0:
-                print("You won in " + str(i) + " attempts\n")
-                print(theWord + " = " + guess)
+            if numEpisode % print_interval == 0:
+                print("You won in " + str(i) + " attempts")
+                print(theWord + " = " + guess + "\n")
             agent.reset()
             return i
 
@@ -76,8 +80,9 @@ def runEpisode(numEpisode):
         guess = next_guess
         i += 1
 
-    if numEpisode % 1000 ==0:
-        print("No win\n")
+    # Print results
+    if numEpisode % print_interval ==0:
+        print("No win")
         print("Wordle was: " + theWord + "\n")
 
     agent.reset()  # Reset word list etc in agent for new round
@@ -85,15 +90,17 @@ def runEpisode(numEpisode):
 
 
 def main():
-    episodes = 1
+    """
+    Run specified number of overall training episodes and track win % and average guesses needed
+    """
+    episodes = 1000
     numEpisode = 0
 
-    '''Main file for executing wordle program'''
     i = 0
     wins = 0
     attempts = 0
     losses = 0
-    while i < episodes:
+    while i < episodes:  # Run training
         sol = runEpisode(numEpisode)
         if sol > 0:
             wins += 1
@@ -104,13 +111,41 @@ def main():
         i +=1
         numEpisode += 1
 
-    print(agent.qvalues)
+    #print(agent.qvalues)
 
-    print("Total wins: " + str(wins) + "\n")
-    print("Total losses: " + str(losses) + "\n")
-    print("Average attempts: " + str(attempts / episodes) + "\n")
+    print("Total wins: " + str(wins))
+    print("Total losses: " + str(losses))
+    print("Average attempts: " + str(attempts / episodes))
     print("Win rate: " + str(wins / episodes) + "\n")
 
+    """
+    Run specified number of testing episodes based on trained QAgent. 
+    Print overall win % and average number of guesses needed
+    """
+    testing_episodes = 1
+    num_testing_episode = 0
+
+    k = 0
+    wins = 0
+    attempts = 0
+    losses = 0
+    while k < testing_episodes:  # Run tests
+        sol = runEpisode(num_testing_episode)
+        if sol > 0:
+            wins += 1
+            attempts += sol
+        else:
+            losses += 1
+            attempts += 6
+        k +=1
+        num_testing_episode += 1
+
+    #print(agent.qvalues)
+
+    print("Total testing wins: " + str(wins))
+    print("Total testing losses: " + str(losses))
+    print("Average testing attempts: " + str(attempts / testing_episodes))
+    print("Testing win rate: " + str(wins / testing_episodes) + "\n")
 
 if __name__ == "__main__":
     main()

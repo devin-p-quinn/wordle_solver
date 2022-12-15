@@ -8,7 +8,6 @@
 import random
 from collections import defaultdict
 
-import rl_wordle
 import util
 import wordle, naive_wordle
 
@@ -20,7 +19,7 @@ class QLearningAgent():
     and actions are the next word guessed
     """
 
-    def __init__(self, alpha=1.0, epsilon=0.2, gamma=0.8, numTraining = 10):
+    def __init__(self, alpha=1.0, epsilon=0.9, gamma=0.8, numTraining = 10):
         """
         Sets options, which can be passed in via the Pacman command line using -a alpha=0.5,...
         alpha    - learning rate
@@ -45,13 +44,24 @@ class QLearningAgent():
         # Initiate q-values
         self.qvalues = util.Counter()
 
+    def setAlpha(self, alpha):
+        self.alpha = alpha
+
+    def setEpsilon(self, epsilon):
+        self.epsilon = epsilon
+
     def getQValues(self):
         return self.qvalues
 
     def filterWords(self, state):
+        """
+        Filters list of potential actions (words) remaining after getting result of guess
+        """
         j = 0
         guess = state[0]
         result = state[1]
+
+        # Get letter counts
         for letter in result:
             if letter == 'g':
                 self.green_letters[j] = guess[j]
@@ -61,15 +71,20 @@ class QLearningAgent():
                 self.yellow_letters.append(guess[j])
             j += 1
 
+        # Remove black letters from alphabet
         for letter in self.alphabet:
             if letter in self.black_letters:
                 self.alphabet.remove(letter)
 
         for word in reversed(self.actions):
-            for letter in word:
-                if letter not in self.alphabet:
+            for letter in range(len(word)):
+                if word[letter] not in self.alphabet:  # Remove words containing black letters
                     self.actions.remove(word)
                     break
+                if state[1][letter] == "g" and word[letter] != state[0][letter]:
+                    self.actions.remove(word)
+                    break
+
 
         if guess in self.actions:
             self.actions.remove(guess)
@@ -80,19 +95,23 @@ class QLearningAgent():
         return self.qvalues[(state, action)]
 
     def getReward(self, state):
+        """
+        Reward function: rewards winning, getting green & yellow tiles
+            and shrinking the list of potential actions by a greater amount
+        """
         original_list_length = len(self.actions)
         # This will change the list of remaining words. Only call once state is determined
         self.filterWords(state)
         new_list_length = len(self.actions)
         reward = 0
-        if wordle.checkWon():
+        if wordle.checkWon(state[1]):
             reward += 1000
         else:
-            for letter in state:
+            for letter in state[1]:
                 if letter == "g":
-                    reward += 2
+                    reward += 200
                 if letter == "y":
-                    reward += 1
+                    reward += 100
 
             # Bonus for reducing the pool of potential next words
             if new_list_length != 0:
@@ -101,6 +120,9 @@ class QLearningAgent():
         return reward
 
     def computeValueFromQValues(self, state):
+        """
+        Find max q value of all possible actions from state
+        """
         max_qval = -self.MAXINT
         for action in self.actions:
             temp = self.getQValue(state, action)
@@ -110,6 +132,9 @@ class QLearningAgent():
         return max_qval
 
     def computeActionFromQValues(self, state):
+        """
+        Compute the best action from list of remaining action based on Q value
+        """
         best_action = None
         qval = -self.MAXINT
 
